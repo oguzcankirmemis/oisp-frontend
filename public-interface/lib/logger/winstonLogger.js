@@ -25,7 +25,8 @@ var getLogConfiguration = function (baseConfig) {
 
 module.exports = new winston.Logger({
     transports: [
-        new (winston.transports.Console) (getLogConfiguration(loggerConf.transport.console))
+        new (winston.transports.Console) (getLogConfiguration(loggerConf.transport.console)),
+        //new (winston.transports.File) (getLogConfiguration(loggerConf.transport.file))
     ],
     levels: logLevel.levelValue,
     colors: logLevel.levelColors

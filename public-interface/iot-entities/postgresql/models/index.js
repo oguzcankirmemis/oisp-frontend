@@ -45,7 +45,7 @@ var Sequelize = require('sequelize'),
 var getSequelizeOptions = function() {
     var options = config.options;
     options.logging = function(entry) {
-        logger.debug(entry);
+        logger.info(entry);
     };
     return options;
 };
