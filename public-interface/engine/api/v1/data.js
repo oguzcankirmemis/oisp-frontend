@@ -37,43 +37,44 @@ exports.collectData = function (options, resultCallback) {
         accountId = data.accountId,
         gatewayId = options.gatewayId;
     // Since AA require the account id (that AA called public account id). It is converted.
-    DevicesAPI.getDevice(deviceId, accountId, function (err, foundDevice) {
-        if (!err && foundDevice && foundDevice.domainId === accountId) {
-            if (foundDevice.components) {
-                if (deviceId === gatewayId || foundDevice.gatewayId === gatewayId) {
-                    logger.debug("Found " + foundDevice.components.length + " device components");
-                    var latestObservationTimes = {};
-                    var oldObservationTimes = {};
-                    var currentComponents = [];
-                    foundDevice.components.forEach(function (cmp) {
-                        var latestObservationTime = -1;
-                        data.data.forEach(function (item) {
-                            logger.debug("Comparing device component - " + cmp.cid + " with component - " + item.componentId);
-                            if (item.componentId === cmp.cid) {
-                                if (new valuesValidator(cmp.componentType.dataType, item.value).validate() === true) {
-                                    currentComponents.push({ type: cmp.type, on: item.on });
-                                }
-                                if (item.on > latestObservationTime) {
-                                    latestObservationTime = item.on;
-                                }
-                                if (new Date(item.on) <= cmp.last_export_date) {
-                                    if (!(cmp.cid in oldObservationTimes)) {
-                                        oldObservationTimes[cmp.cid] = [];
-                                    }
-                                    oldObservationTimes[cmp.cid].push(item.on);
-                                }
-                            }
-                        });
-                        if (latestObservationTime > -1) {
-                            latestObservationTimes[cmp.cid] = latestObservationTime;
-                        }
-                    });
-                    if (currentComponents.length > 0) {
+//    DevicesAPI.getDevice(deviceId, accountId, function (err, foundDevice) {
+//        if (!err && foundDevice && foundDevice.domainId === accountId) {
+//            if (foundDevice.components) {
+//                if (deviceId === gatewayId || foundDevice.gatewayId === gatewayId) {
+//                    logger.debug("Found " + foundDevice.components.length + " device components");
+//                    var latestObservationTimes = {};
+//                    var oldObservationTimes = {};
+//                    var currentComponents = [];
+//                    foundDevice.components.forEach(function (cmp) {
+//                        var latestObservationTime = -1;
+//d                        data.data.forEach(function (item) {
+//                            logger.debug("Comparing device component - " + cmp.cid + " with component - " + item.componentId);
+//                            if (item.componentId === cmp.cid) {
+//                                if (new valuesValidator(cmp.componentType.dataType, item.value).validate() === true) {
+//                                    currentComponents.push({ type: cmp.type, on: item.on });
+//                                }
+//                                if (item.on > latestObservationTime) {
+//                                    latestObservationTime = item.on;
+//                                }
+//                                if (new Date(item.on) <= cmp.last_export_date) {
+//                                    if (!(cmp.cid in oldObservationTimes)) {
+//                                        oldObservationTimes[cmp.cid] = [];
+//                                    }
+//                                    oldObservationTimes[cmp.cid].push(item.on);
+//                                }
+//                            }
+//                        });
+//                        if (latestObservationTime > -1) {
+//                            latestObservationTimes[cmp.cid] = latestObservationTime;
+//                        }
+//                    });
+//                    if (currentComponents.length > 0) {
                         // update health total
 
                         // this message get to this point by REST API, we need to forward it to MQTT channel for future consumption
                         data.domainId = accountId;
-                        data.gatewayId = foundDevice.gatewayId;
+//                        data.gatewayId = foundDevice.gatewayId;
+                        data.gatewayId = gatewayId;
                         data.deviceId = deviceId;
                         data.systemOn = Date.now();
 
@@ -82,34 +83,34 @@ exports.collectData = function (options, resultCallback) {
                             submitData = proxy.submitDataREST;
                         }
 
-                        Object.keys(oldObservationTimes).forEach(function (cid) {
-                            DeviceComponentMissingExportDays.addHistoricalDaysWithDataIfNotExisting(cid, oldObservationTimes[cid], function (err) {
-                                if(err) {
-                                    logger.error("Error occured when adding historical dates for exporting again for component " + cid + ": " + err);
-                                }
-                            });
-                        });
+//                        Object.keys(oldObservationTimes).forEach(function (cid) {
+//                            DeviceComponentMissingExportDays.addHistoricalDaysWithDataIfNotExisting(cid, oldObservationTimes[cid], function (err) {
+//                                if(err) {
+//                                    logger.error("Error occured when adding historical dates for exporting again for component " + cid + ": " + err);
+//                                }
+//                            });
+//                        });
 
                         logger.debug("Data to Send: " + JSON.stringify(data));
                         submitData(data, function (err) {
                             resultCallback(err);
                         });
 
-                    } else {
-                        // None of the components is registered for the device
-                        resultCallback(errBuilder.build(errBuilder.Errors.Device.Component.NotFound));
-                    }
-                } else {
-                    // Invalid GatewayId
-                    resultCallback(errBuilder.build(errBuilder.Errors.Generic.NotAuthorized));
-                }
-            } else {
-                resultCallback(errBuilder.build(errBuilder.Errors.Device.Component.NotExists));
-            }
-        } else {
-            resultCallback(err || errBuilder.build(errBuilder.Errors.Device.NotFound));
-        }
-    });
+//                    } else {
+//                        // None of the components is registered for the device
+//                        resultCallback(errBuilder.build(errBuilder.Errors.Device.Component.NotFound));
+//                    }
+//                } else {
+//                    // Invalid GatewayId
+//                    resultCallback(errBuilder.build(errBuilder.Errors.Generic.NotAuthorized));
+//                }
+//            } else {
+//                resultCallback(errBuilder.build(errBuilder.Errors.Device.Component.NotExists));
+//            }
+//        } else {
+//            resultCallback(err || errBuilder.build(errBuilder.Errors.Device.NotFound));
+//        }
+//    });
 };
 
 function findDevices(accountId, targetFilter, resultCallback) {
