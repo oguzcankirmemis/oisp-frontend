@@ -21,6 +21,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "async": "*",
+    "benchmark": "^2.1.4",
     "body-parser": "^1.13.1",
     "cfenv": "^1.0.0",
     "compression": "^1.5.0",
@@ -51,6 +52,7 @@
     "serve-favicon": "^2.3.0",
     "socket.io": "*",
     "underscore": "^1.9.1",
+    "uuid": "^3.3.2",
     "websocket": "^1.0.14",
     "winston": "^3.1.0",
     "xtend": "*"
