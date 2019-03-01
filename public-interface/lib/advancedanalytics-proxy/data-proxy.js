@@ -156,6 +156,9 @@ module.exports = function(config) {
     };
 
     this.submitDataREST = function(data, callback) {
+        if (process.env.BYPASS_BACKEND) {
+            return callback(null);
+        }
         const context = contextProvider.instance();
         const span = createSpan('submitDataRest');
 
