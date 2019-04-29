@@ -65,8 +65,8 @@ var sequelize = new Sequelize(
 
 var super_user_sequelize = new Sequelize(
     config.database,
-    config.username,
-    config.password,
+    config.su_username,
+    config.su_password,
     getSequelizeOptions()
 );
 
@@ -398,7 +398,7 @@ users.belongsToMany(accounts, {through: 'user_accounts'});
 alerts.hasMany(alertComments, {as: 'Comments'});
 
 var executeSql = function (sql, transaction) {
-    return sequelize.query(sql, {transaction: transaction});
+    return super_user_sequelize.query(sql, {transaction: transaction});
 };
 
 var executeScriptsFromFiles = function(path, files, transaction) {
@@ -430,7 +430,7 @@ var executeScriptsWithTransaction = function() {
 
     return readScriptsFromFile(path)
         .then(function(files) {
-            return postgresProvider.startTransaction()
+            return postgresProvider.superUserStartTransaction()
                 .then(function(transaction) {
                     return executeScriptsFromFiles(path, files, transaction)
                         .then(function () {
@@ -462,9 +462,9 @@ var executeScriptsWithoutTransaction = function () {
 };
 
 module.exports.initSchema = function () {
-    return sequelize.createSchema('dashboard')
+    return super_user_sequelize.createSchema('dashboard')
         .then(() => {
-            return sequelize.sync();
+            return super_user_sequelize.sync();
         })
         .then(() => {
             return executeScriptsWithTransaction();
