@@ -48,6 +48,7 @@ ResetDB.prototype.reset = function(cb) {
         })
         .finally(function() {
             models.super_user_sequelize.close();
+	    models.sequelize.close();
             tracer.close();
         });
 };

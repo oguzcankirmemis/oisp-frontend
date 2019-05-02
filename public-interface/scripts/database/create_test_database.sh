@@ -22,7 +22,7 @@ psql=( psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" )
 "${psql[@]}" <<-EOSQL
     CREATE DATABASE $TEST_DB;
     GRANT ALL PRIVILEGES ON DATABASE $TEST_DB TO $POSTGRES_USER;
-    GRANT ALL PRIVILEGES ON DATABASE $TEST_DB TO oisp_user;
+    GRANT CONNECT ON DATABASE $TEST_DB TO oisp_user;
 EOSQL
 if [ "$(ls -A | grep \\.sql\$)" ]; then
     for f in /docker-entrypoint-initdb.d/*.sql; do

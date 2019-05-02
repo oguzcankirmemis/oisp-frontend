@@ -19,6 +19,6 @@ set -e
 psql=( psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" )
 
 "${psql[@]}" <<-EOSQL
-	CREATE USER oisp_user WITH PASSWORD 'supersecure';
-	GRANT ALL PRIVILEGES ON DATABASE iot TO oisp_user;
+	CREATE USER oisp_user WITH PASSWORD 'supersecret';
+	GRANT CONNECT ON DATABASE $POSTGRES_DB TO oisp_user;
 EOSQL

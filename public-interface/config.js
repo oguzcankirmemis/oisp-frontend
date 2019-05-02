@@ -98,8 +98,8 @@ if (postgres_config.writeHostname) {
 	postgresWriteConf = {
 		host: postgres_config.writeHostname,
 		port: postgres_config.writePort,
-		username: postgres_config.writeUsername,
-		password: postgres_config.writePassword,
+		su_username: postgres_config.writeUsername,
+		su_password: postgres_config.writePassword,
 		username: 'oisp_user',
 		password: 'supersecret',
 	};
@@ -165,18 +165,19 @@ var config = {
     },
     postgres: {
         database: postgres_config.dbname,
-        username: postgres_config.username,
-        password: postgres_config.password,
-		  username: 'oisp_user',
-		  password: 'supersecret',
+        su_username: postgres_config.username,
+        su_password: postgres_config.password,
+        username: 'oisp_user',
+        password: 'supersecret',
         options: {
             host: postgres_config.hostname,
             port: postgres_config.port,
             dialect: 'postgres',
-			replication: {
-				read: postgresReadReplicas,
-				write: postgresWriteConf
-			},
+            databaseVersion: "9.4.21",
+			      replication: {
+				        read: postgresReadReplicas,
+				        write: postgresWriteConf
+			      },
             pool: {
                 max: 12,
                 min: 0,

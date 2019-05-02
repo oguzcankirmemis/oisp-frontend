@@ -230,28 +230,27 @@ exports.registerDevice = function (deviceToRegister, activationCode, resultCallb
 
 
 exports.refreshDeviceToken = function(deviceId, deviceRefreshToken, resultCallback) {
+    /* Validate if refresh token is valid for this device and wether it has been revoked or not */
+	  return Device.validateRefreshToken(deviceId, deviceRefreshToken)
+		    .then(function(validationResult) {
+			      if(validationResult) {
+                return validationResult;
+            }
 
-	/* Validate if refresh token is valid for this device and wether it has been revoked or not */
-	return Device.validateRefreshToken(device.deviceId, deviceRefreshToken)
-		.then(function(validationResult) {
+			      /* Validation was succesful -> Issue new token */
+			      var deviceAccount = [{
+				        id: validationResult.accountId,
+				        role: 'device'
+			      }];
 
-			if(validationResult)
-				return validationResult;
-
-			/* Validation was succesful -> Issue new token */
-			var deviceAccount = [{
-				 id: validationResult.accountId,
-				 role: 'device'
-			}];
-
-			return generateToken(device.deviceId, deviceAccount)
-				.then(function(newDeviceToken)
-				{
-					if(!token)
-						throw errBuilder.Errors.Device.RefreshTokenError;
-					resultCallback(null, {deviceToken: newDeviceToken});
-				})
-			})
+			      return generateToken(deviceId, deviceAccount)
+				        .then(function(newDeviceToken) {
+					          if(!newDeviceToken) {
+                        throw errBuilder.Errors.Device.RefreshTokenError;
+                    }
+					          resultCallback(null, { deviceToken: newDeviceToken });
+				        });
+			  })
         .catch(function(err) {
             logger.warn('refreshDeviceToken - error occured while refreshing deviceToken: ' + JSON.stringify(err));
             var errMsg = errBuilder.Errors.Device.RefreshTokenError;
@@ -260,7 +259,7 @@ exports.refreshDeviceToken = function(deviceId, deviceRefreshToken, resultCallba
             }
             resultCallback(errMsg);
         });
-}
+};
 
 function runFunctionIfValidCriteria(criteria, queryParameters, resultCallback, deviceFunction) {
     if (criteria) {
