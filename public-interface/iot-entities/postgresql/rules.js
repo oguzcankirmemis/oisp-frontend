@@ -24,9 +24,7 @@ var rules = require('./models').rules,
     errBuilder = require("../../lib/errorHandler/index").errBuilder,
     ruleInterpreter = require('../../lib/interpreter/postgresInterpreter').rules(),
     userInterpreter = require('../../lib/interpreter/postgresInterpreter').users(),
-    accountInterpreter = require('../../lib/interpreter/postgresInterpreter').accounts(),
-    sequelize = require('./models').sequelize,
-    uuid = require('node-uuid');
+    accountInterpreter = require('../../lib/interpreter/postgresInterpreter').accounts();
 
 
 var ruleStatus = {active: 'Active', archived: 'Archived', onhold: 'On-hold', draft: 'Draft', deleted: 'Deleted'};
